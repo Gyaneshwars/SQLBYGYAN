@@ -1,0 +1,34 @@
+-----SQL Query Developer---Gnaneshwar Sravane
+USE Estimates
+
+DECLARE @frdate AS DATETIME,@todate AS DATETIME
+SET @frdate='2023-08-01 00:00:00.000'
+SET @todate='2023-08-30 23:59:59.999'
+
+IF OBJECT_ID ('TEMPDB..#CTAdminData') IS NOT NULL DROP TABLE #CTAdminData
+SELECT DISTINCT ct.collectionEntityId,ct.relatedcompanyid,ct.enddate,ct.PriorityID,ct.collectionStageStatusId,usr.employeeNumber,usr.firstName+' '+usr.lastName AS EmpName,
+ct.userId,ct.collectionEntityToProcessId,ct.collectionEntityTypeId,cet.collectionEntityTypeName,ct.collectionstageId,ct.insertedDate,ct.startDate,ct.stageInsertedDate INTO #CTAdminData 
+FROM            WorkflowArchive_Estimates.dbo.CommonTracker_vw ct (NOLOCK)
+INNER JOIN      CTAdminRepTables.dbo.user_tbl usr (NOLOCK) ON ct.userId = usr.userid
+INNER JOIN      Workflow_Estimates.[dbo].[CollectionEntityType_tbl] cet (NOLOCK) ON cet.collectionEntityTypeId=ct.collectionEntityTypeId
+WHERE           ct.enddate BETWEEN @frdate AND  @todate AND ct.collectionEntityTypeId IN (50,41)
+
+---SELECT * FROM #CTAdminData
+
+
+---Feed Process (End-to-End)
+SELECT DISTINCT collectionEntityToProcessId,collectionEntityId,collectionEntityTypeName AS EntityType,relatedCompanyId AS CompanyId,collectionEntityTypeId,collectionstageId,collectionstageStatusId,
+insertedDate AS ProcessInsertedDate,stageInsertedDate,startDate,enddate,PriorityID 
+FROM #CTAdminData 
+WHERE collectionEntityTypeId IN (50)
+
+--SELECT DISTINCT collectionEntityToProcessId,collectionEntityId,collectionEntityTypeName,CASE WHEN relatedCompanyId IS NULL THEN '' ELSE relatedCompanyId END AS CompanyId,collectionEntityTypeId,
+--ISNULL(collectionstageId,'') AS collectionstageId,collectionstageStatusId,insertedDate,startDate,ISNULL(enddate,'') AS enddate,ISNULL(PriorityID,'') AS PriorityID
+--FROM #CTAdminData WHERE collectionEntityTypeId IN (50)
+
+
+---Split Process in Estimates
+SELECT DISTINCT collectionEntityToProcessId,collectionEntityId,collectionEntityTypeName AS EntityType,relatedCompanyId AS CompanyId,collectionEntityTypeId,collectionstageId,collectionstageStatusId,
+insertedDate AS ProcessInsertedDate,stageInsertedDate,startDate,enddate,PriorityID 
+FROM #CTAdminData 
+WHERE collectionEntityTypeId IN (41)
