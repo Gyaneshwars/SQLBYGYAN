@@ -5,7 +5,8 @@ SET @frdate='2023-08-25 00:00:00.000'
 SET @todate='2023-12-31 23:59:59.999'
 
 IF OBJECT_ID ('TEMPDB..#Event') IS NOT NULL DROP TABLE #Event
-SELECT DISTINCT e.researchcontributorid,e.companyid,e.versionid,e.tradingItemId,e.eventtypeid,et.eventtypename INTO #Event FROM Estimates.dbo.Event_tbl e (NOLOCK)
+SELECT DISTINCT e.researchcontributorid,e.companyid,e.versionid,e.tradingItemId,e.eventtypeid,et.eventtypename INTO #Event 
+FROM Estimates.dbo.Event_tbl e (NOLOCK)
 INNER JOIN Estimates.dbo.EventType_tbl et (NOLOCK) ON  et.eventtypeid=e.eventtypeid
 INNER JOIN WorkflowArchive_Estimates.dbo.CommonTracker_vw ct (NOLOCK) ON ct.collectionEntityId = e.versionid
 WHERE e.eventtypeid IS NOT NULL AND e.versionid IS NOT NULL
