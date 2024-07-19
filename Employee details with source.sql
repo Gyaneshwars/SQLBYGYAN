@@ -1,8 +1,8 @@
 -----SQL Query Developer---Gnaneshwar Sravane
 USE Estimates
 DECLARE @frDate AS DATETIME, @toDate AS DATETIME
-SET @frDate = '2023-08-01 00:00:00.000' ----Provide From Date Here
-SET @toDate = '2023-09-30 23:59:59.999' ----Provide To Date Here
+SET @frDate = '2023-10-01 00:00:00.000' ----Provide From Date Here
+SET @toDate = '2023-10-30 23:59:59.999' ----Provide To Date Here
 
 IF OBJECT_ID('tempdb..#EmpData_Temp') IS NOT NULL DROP TABLE #EmpData_Temp
 SELECT DISTINCT ed.versionid ,ed.companyid,ctl.companyName,contributor=dbo.researchcontributorname_fn(ed.researchcontributorid),ed.effectiveDate AS FilingDate,edn.dataItemId,
@@ -22,10 +22,12 @@ AND UT.employeeNumber IN ('415043','914040','716010','411016','415028','916001')
 AND ed.versionId IS NOT NULL
 AND CT.collectionstageStatusId IN (1,2,3,4,5)
 AND UT.employeeNumber NOT IN ('000266','000387','000EF2','000EF3','00000A')
+AND v.formatID IN (7,63,64,83,157,177,176)
 ORDER BY ed.effectiveDate
 
 
 
 
-SELECT DISTINCT EmpName,EmpId,versionId,companyId,companyName,contributor,FilingDate,startDate,endDate,collectionStageStatusName,TimeSpent AS TimeSpent_In_Minutes,Description AS SourceName FROM #EmpData_Temp WHERE formatID IN (7,63,64,83,157,177,176)
+SELECT DISTINCT EmpName,EmpId,versionId,companyId,companyName,contributor,FilingDate,startDate,endDate,collectionStageStatusName,TimeSpent AS TimeSpent_In_Minutes,
+Description AS SourceName FROM #EmpData_Temp WHERE formatID IN (7,63,64,83,157,177,176)
 
